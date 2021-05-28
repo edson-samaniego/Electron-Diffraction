@@ -36,52 +36,13 @@ def center(centro):
             if d2 > (dato3-100):
                 centro.putpixel((n,m), color)
                 acumula.append((n,m))
-    #centro.save('circ_central.bmp', "BMP", quality=300)
-
-#    for y in range(centro.height):
- #       for x in range(centro.width):
-  #          verdes=centro.getpixel((x,y))
-   #         if verdes == color:
-                #print('detectó diferente verde',x,y)
-    #            p_ct=centro.getpixel((x,y))
-     #           p1=centro.getpixel((x-1,y-1))
-      #          p2=centro.getpixel((x,y-1))
-       #         p3=centro.getpixel((x+1,y-1))
-        #        p4=centro.getpixel((x-1,y))
-         #       p6=centro.getpixel((x+1,y))
-          #      p7=centro.getpixel((x-1,y+1))
-           #     p8=centro.getpixel((x,y+1))
-            #    p9=centro.getpixel((x+1,y+1))
-             #   vecinos=(p1,p2,p3,p4,p6,p7,p8,p9,p_ct)
-              #  if p_ct == color:
-                    #if (any([d != color for d in vecinos]))== True:
-                     #   orig.putpixel((x,y), color2)
-               #     if (any([d != color for d in vecinos]))== False:
-                #        orig.putpixel((x-1,y-1), color2)
-                 #       orig.putpixel((x,y-1), color2)
-                  #      orig.putpixel((x+1,y-1), color2)
-                   #     orig.putpixel((x-1,y), color2)
-                    #    orig.putpixel((x+1,y), color2)
-                     #   orig.putpixel((x-1,y+1), color2)
-                      #  orig.putpixel((x,y+1), color2)
-                       # orig.putpixel((x+1,y+1), color2)
-                        #orig.putpixel((x,y), color2)
-                        
-                        
+                     
     centro.save('circ_central.bmp', "BMP", quality=300)        
-# grafico las coordenadas de pixels pintados 
-#    x, y = [], []
- #   for point in range(0, (len(acumula))):
-  #      eje=acumula[point]
-   #     x.append(eje[0])
-    #    y.append(eje[1])
-    #plt.scatter(x,y)
-    #plt.show()
     return centro 
 #############################
 
 imorig = Image.open("Ag_Nano1.bmp")
-im = Image.open("Ag_Nano1.bmp")#Ag_Nano1.bmp Ag_Nano2.bmp  Au_Nano_1.bmp  Au_Nano_2.bmp  Fe3O4_Nano1.bmp
+im = Image.open("Ag_Nano1.bmp") #Ag_Nano1.bmp Ag_Nano2.bmp  Au_Nano_1.bmp  Au_Nano_2.bmp  Fe3O4_Nano1.bmp
 print('imagen 1',im.size, im.mode, im.format)
 px = im.load()
 
