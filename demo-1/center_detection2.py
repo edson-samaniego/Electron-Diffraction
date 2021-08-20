@@ -7,13 +7,6 @@ from PIL.ImageFilter import (BLUR, CONTOUR, DETAIL, EDGE_ENHANCE,
                              EDGE_ENHANCE_MORE, EMBOSS, FIND_EDGES,
                              SMOOTH, SMOOTH_MORE, SHARPEN)
 
-############# cambia a escala de grises y saca histograma
-#imagen = cv2.imread("Ag_Nano1.bmp",cv2.IMREAD_GRAYSCALE)
-#imagen2 = cv2.imread("Ag_Nano1.bmp")
-#plt.imshow(imagen)
-#plt.show()
-#plt.hist(imagen.ravel(), 256, [0,256])
-#plt.show()
 #######################################
 def negative(im, h, w):
     height= h
@@ -48,9 +41,6 @@ h= im.size[1]
 imagen2 = cv2.imread("Fe3O4_Nano1.bmp")
 plt.hist(imagen2.ravel(), 256, [0,256])
 counts, bins, bars = plt.hist(imagen2.ravel(), 256, [0,256])
-#print(bins)
-#print(counts)
-#print(counts)
 plt.show()
 ####################################
 color=(51,255,251)
@@ -66,7 +56,6 @@ for m in range(h):
             imorig.putpixel((m,n),(0,0,0))
 plt.imshow(imorig)
 plt.show()
-
 ########################################
 for x in range(h):
     for y in range(w):
@@ -110,14 +99,6 @@ for m in range(h):
                     for p in range(-5,6):
                         for q in range(-5,6):
                             p1=im.putpixel((m+p,n+q),negro)
-                    #p1=im.putpixel((m-1,n-1),negro)
-                    #p2=im.putpixel((m,n-1),negro)
-                    #p3=im.putpixel((m+1,n-1),negro)
-                    #p4=im.putpixel((m-1,n),negro)
-                    #p6=im.putpixel((m+1,n),negro)
-                    #p7=im.putpixel((m-1,n+1),negro)
-                    #p8=im.putpixel((m,n+1),negro)
-                    #p9=im.putpixel((m+1,n+1),negro)
         else:
             im.putpixel((m,n),blanco)
 plt.imshow(im)
@@ -143,7 +124,6 @@ plt.title('gaussian blur')
 plt.show()
 
 ######### canny contorno
-#canny= cv2.Canny(blur,30,150,3)
 canny= cv2.Canny(blur,30,150,3)
 plt.imshow(canny,cmap='gray')
 plt.title('canny')
@@ -218,18 +198,7 @@ plt.imshow(new)
 plt.title('Centro')
 plt.show()
 new.save('new.png',"png")
-#### corta la seccion a encontrar circunferencia
-#corte=new.crop((xmin, ymin, xmax, ymax))
-#corte.save('corte.png', "png", quality=300)
-#plt.imshow(corte)
-#plt.title('Corte')
-#plt.show()
-#print(corte.size,'tamaño de imagen de contorno')
-#xy=corte.size
-#X=xy[0]
-#Y=xy[1]
 #############################################################################
-
 X=xmax-xmin
 Y=ymax-ymin
 print(X,Y,'para limites del centro')
@@ -255,10 +224,6 @@ for i in circles[0,:]:
     cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),1)
     #dibuja el centro del circulo
     cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),-1)
-
-#cv2.imshow('detected circles',cimg)
-#cv2.waitKey(0)
-#cv2.destroyAllWindows()
 plt.imshow(cimg)
 plt.show()
 
