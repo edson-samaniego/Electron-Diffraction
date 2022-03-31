@@ -64,9 +64,9 @@ def resta(muestra,pixel_cen):
     myline = np.linspace(0, len(diagonal), pixeles_diag)
     mymodel2 = np.poly1d(np.polyfit(x2, y2, 6))
     myline2 = np.linspace(0, len(inverso), pixeles_diag2)
-    plt.plot(x, y)
-    plt.plot(myline, mymodel(myline))
-    plt.show()
+    #plt.plot(x, y)
+    #plt.plot(myline, mymodel(myline))
+    #plt.show()
 
 ###################### buscar picos de grafico ##################################
     data=(myline, mymodel(myline))
@@ -123,21 +123,21 @@ def resta(muestra,pixel_cen):
         nuevo = [round(i * divis) for i in remplazo]
         nuevo2=[]
         ###### error aqui en otras muestras picos dobles no hay minimo y brinca
-        print("nuevo",nuevo)
+        #print("nuevo",nuevo)
         for s in nuevo:
-            print(datavert[s])
+        #    print(datavert[s])
             nuevo2.append(datavert[s])    
         diagonal=pt1 + nuevo2 + pt2
         
-        plt.plot(myline, mymodel(myline),color='gray')
-        plt.plot((range(0,len(diagonal))), diagonal, color= 'green')
-        plt.scatter(peak_pos, height, color= 'r', s=90, marker='x')
-        plt.scatter((range(0,len(diagonal))), diagonal, color='blue', s=8)
+        #plt.plot(myline, mymodel(myline),color='gray')
+        #plt.plot((range(0,len(diagonal))), diagonal, color= 'green')
+        #plt.scatter(peak_pos, height, color= 'r', s=90, marker='x')
+        #plt.scatter((range(0,len(diagonal))), diagonal, color='blue', s=8)
     #plt.plot(myline2, mymodel2(myline2),color='gray')
     #plt.plot((range(0,len(inverso))), inverso, color= 'green')
-        plt.scatter(peak_pos2, real_height2, color= 'r', s=90, marker='x')
+        #plt.scatter(peak_pos2, real_height2, color= 'r', s=90, marker='x')
     #plt.scatter((range(0,len(inverso))),inverso, color='blue', s=8)
-        plt.show()
+        #plt.show()
     
 ############################## nuevo gradiente ###############################
     im = np.zeros((Y,X,3),np.uint8)
