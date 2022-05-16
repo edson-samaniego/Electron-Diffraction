@@ -12,17 +12,24 @@ def spot_center(img, minx, maxx, miny, maxy):
     crop_img = img[miny:maxy, minx:maxx]
     crop_img2=crop_img.copy()
     h, w, c = crop_img.shape
-    esquina =(round(h/2),0)
-    centro =(round(h/2),round(w/2))
-    spot = cv2.line(crop_img, esquina, centro, (0,255,0), 1)
+    esquina =(0,0)
+    pmayor=[]
+    for y in range(h):
+        for x in range(w):
+            px=crop_img[y][x]
+            pmayor.append(((px[0]),y,x))
+    maximo=max(pmayor)
+    #centro =(round(h/2),round(w/2))#### REVISAR SI EL CENTRO PUEDE SER EL PIXEL MAS INTENSO
+    centro =(maximo[1],maximo[2])
+    spot = cv2.line(crop_img2, esquina, centro, (0,255,0), 1)
     diagonal=[]
-    for m in range(round(h/2)+3):
-        for n in range(round(w/2)+3):
+    for m in range(h):
+        for n in range(w):
             pix= spot[m,n]
             if (pix[0],pix[1],pix[2]) == (0,255,0):
-                diagonal.append(crop_img2[m,n][0])             
-    diagonal=diagonal[3:]
-    imorig=np.array(crop_img2)
+                diagonal.append(crop_img[m,n][0])             
+    diagonal=diagonal[-10:]
+    imorig=np.array(crop_img)
     im_copy=imorig.copy()
     blanco=(255,255,255)
     negro=(0,0,0)
@@ -59,13 +66,13 @@ def spot_center(img, minx, maxx, miny, maxy):
         
         params = cv2.SimpleBlobDetector_Params()
         params.filterByArea = True
-        params.minArea = 1
+        params.minArea = .01
         params.filterByCircularity = True
-        params.minCircularity = 0.6
+        params.minCircularity = 0.01#0.6
         params.filterByConvexity = True
-        params.minConvexity = 0.2
+        params.minConvexity = 0.3
         params.filterByInertia = True
-        params.minInertiaRatio = 0.1
+        params.minInertiaRatio = 0.001
         detector = cv2.SimpleBlobDetector_create(params)
         keypoints = detector.detect(cen_circ)
         for keyPoint in keypoints:
@@ -84,8 +91,9 @@ def spot_center(img, minx, maxx, miny, maxy):
         blank = np.zeros((1, 1))
         blobs = cv2.drawKeypoints(cen_circ, keypoints, blank, (255,0,0),
                                   cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        #plt.subplot(111), plt.imshow(blobs), plt.title('spot')
-        #plt.show()
+##        cv2.imwrite('spot_circle.png',blobs)
+##        plt.subplot(111), plt.imshow(blobs), plt.title('spot')
+##        plt.show()
     contador=0
     centro_spot=[]
     for s in n_centro, n2_centro, n3_centro:
@@ -93,13 +101,32 @@ def spot_center(img, minx, maxx, miny, maxy):
             for L in range(0,contador+1):
                 centro_spot.append(s[L])
         contador=contador+1
-    #print(centro_spot)
     return(centro_spot)
+########################
+def intensidad(img, minx, maxx, miny, maxy ):
+    crop_img = img[miny:maxy, minx:maxx]
+    crop_img2=crop_img.copy()
+    h, w, c = crop_img.shape
+    pixels=[]
+    for y in range(h):
+        for x in range(w):
+            px=crop_img[y][x]
+            pixels.append(px[0])
+    minimo=min(pixels)
+    maximo=max(pixels)
+    minimo=minimo+5
+    pixels=[i  for i in pixels if i > minimo]
+    promedio= sum(pixels)/len(pixels)
+    return(maximo)
 ###########################################################################
 def center(muestra):
-    im2=muestra.copy()
     h, w, c = muestra.shape
-    img= cv2.rectangle(muestra, (0,0), (w-1,h-1), (0,0,0), 1)
+    muestra= cv2.rectangle(muestra, (0,0), (w-1,h-1), (0,0,0), 1)
+    img=muestra.copy()
+    im2=muestra.copy()
+    im3=muestra.copy()
+    #h, w, c = muestra.shape
+    #img= cv2.rectangle(muestra, (0,0), (w-1,h-1), (0,0,0), 1)
     ret, bw_img = cv2.threshold(muestra, 10, 255, cv2.THRESH_BINARY)
 
     gray= cv2.cvtColor(bw_img, cv2.COLOR_BGR2GRAY)
@@ -113,10 +140,10 @@ def center(muestra):
     (cnt, heirarchy)= cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     rgb = cv2.cvtColor(dilated, cv2.COLOR_BGR2RGB)
 
-    esq_sup=[]
-    esq_inf=[]
+    cuadro=[]
     posiciones=[]
-    for t in cnt[:]:
+    seccion_cent=[]#!!!!!
+    for t in cnt[:]: #ciclo de contornos encontrados 
         cv2.drawContours(rgb,t, -1, (0,255,0), 1)
         t=t.tolist()
         #print("minX:",min(t), "maxX:",max(t)) 
@@ -126,17 +153,23 @@ def center(muestra):
         maxx=(max(t))[0][0]+4
         miny=(min(q))[0]-4
         maxy=(max(q))[0]+4
-        esq_sup.append((minx,miny))#guarda secciones
-        esq_inf.append((maxx,maxy))#guarda secciones
         esq_sup2=(minx,miny)
         esq_inf2=(maxx,maxy)
         #rgb= cv2.rectangle(rgb, esq_sup2, esq_inf2, (255,0,0), 1)
         rgb= cv2.rectangle(im2, esq_sup2, esq_inf2, (255,0,0), 1)
+##        plt.subplot(121), plt.imshow(rgb), plt.title('rgb')
+##        plt.subplot(122), plt.imshow(muestra), plt.title('muestra')
+##        plt.show()
+        brillo = intensidad(muestra, minx, maxx, miny, maxy)#!!!!!
         cent= spot_center(muestra, minx, maxx, miny, maxy)
         for s in cent:
             posiciones.append(((miny+s[0]),(minx+s[1])))
+            seccion_cent.append(brillo)
+            cuadro.append(((minx,miny),(maxx,maxy)))
             rgb[(miny+s[0]),(minx+s[1])]= (255,0,0)
-        #plt.subplot(111), plt.imshow(rgb), plt.title('deteccion')
-        #plt.show()
-    return(rgb, posiciones)
+##        plt.subplot(111), plt.imshow(rgb), plt.title('deteccion')
+##        plt.show()
+    mayor=max(seccion_cent)
+    porcentajes=[round(((f/mayor)*100),1) for f in seccion_cent]
+    return(rgb, posiciones, porcentajes, cuadro)
 

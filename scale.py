@@ -57,8 +57,8 @@ def vec_brd(im,coordenadas):
                 (p3[0],p3[1],p3[2]),(p5[0],p5[1],p5[2]),(p6[0],p6[1],p6[2]),
                 (p7[0],p7[1],p7[2]),(p8[0],p8[1],p8[2]))
     #print('salio del while')
-    #plt.imshow(im)
-    #plt.show() 
+##    plt.imshow(im)
+##    plt.show() 
     return(acumulados)
 
 def conversion(muestra):
@@ -142,21 +142,41 @@ def conversion(muestra):
     Xmax=max(X)
     #print('Y minimo:',Ymin,'Y maximo',Ymax)
     #print('X minimo:',Xmin,'X maximo',Xmax)
-    DE= sqrt((Xmax-Xmin)**2+(Ymax-Ymin)**2)
-    #print('distancia euclidiana:',DE)
-
+    DE= sqrt((Xmax-Xmin)**2+(Ymin-Ymin)**2)
+##    D2= sqrt((Xmax-Xmin)**2+(Ymax-Ymin)**2)
+    print('distancia euclidiana:',DE)
+##    print('distancia euclidiana:',D2)
+    
+    p1=(str(Xmin),str(Ymin))
+    p2=(str(Xmax),str(Ymin))
+    p3=str(DE)
+    plt.imshow(imb2)
+    plt.text(Xmin-7, Ymin-8, p1, color='cyan',fontsize=20)
+    plt.text(Xmax-7, Ymin-8, p2, color='cyan',fontsize=20)
+    plt.text((Xmax-((Xmax-Xmin)/2))-5, Ymin-2, p3, color='cyan',fontsize=20)
+    plt.text(Xmin, Ymin-2, '--------------------------', color='cyan',fontsize=20)
+    plt.text(((Xmax-Xmin))-12, Ymin-2, '-------------------------', color='cyan',fontsize=20)
+    plt.text(Xmin-1, Ymin-2, '|', color='cyan',fontsize=20)
+    plt.text(Xmax, Ymin-2, '|', color='cyan',fontsize=20)
+    plt.show()
+    
     pytesseract.pytesseract.tesseract_cmd='C:\\Program Files\\Tesseract-OCR\\tesseract.exe' 
     imb1 = cv2.cvtColor(imb1,cv2.COLOR_BGR2RGB)
 
     himg,wimg,_=imb1.shape
     boxes=pytesseract.image_to_boxes(imb1)
     conversion=[]
+##    print(boxes)
     for b in boxes.splitlines():
         b= b.split(' ')
         conversion.append(b[0])
         x,y,w,h = int(b[1]),int(b[2]),int(b[3]),int(b[4])
         cv2.rectangle(imb1,(x,himg-y),(w,himg-h),(0,0,255),1)
-
+##    print("Caracteres encontrados en la imagen:")
+##    print(conversion)
+##    cv2.imwrite('ocr.png', imb1)
+##    plt.imshow(imb1)
+##    plt.show()
     #print("conversion:", len(conversion))
     
     #if len(conversion)== 5:
@@ -165,8 +185,8 @@ def conversion(muestra):
      #   print("Largo de:","6")
     #if len(conversion)== 7:
      #   print("Largo de:","7")
-    #plt.imshow(im1)
-    #plt.show()
+##    plt.imshow(im1)
+##    plt.show()
     return(DE,conversion)
 
 
