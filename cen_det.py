@@ -38,201 +38,112 @@ def center(muestra, rangos):
     implot= muestra.copy()
     muestra= cv2.rectangle(muestra, (0,900), (300,w-1), (0,0,0), -1)
     for S in rangos:
-        #print("muestra",S)
-        antes_ciclo = time() ####!!!!!!!TIEMPO
-    #imagen de cv viene en un array
-        antes = time() ####!!!!!!!TIEMPO
+        antes_ciclo = time()
+        antes = time()
         h, w, c = muestra.shape
-        #print(type(muestra))
         imorig= cv2.rectangle(muestra, (0,0), (w-1,h-1), (0,0,0), 1)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("0-Lectura imagen original:",Tiempo)
-        #plt.title("P0: original")            
-        #plt.imshow(imorig)              
-        #plt.show()
-
+        Tiempo= (time() - antes)
 ########### Pinta segun el rango de intensidad ########## 
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         blanco=(255,255,255)
         negro=(0,0,0)
         rango=(S,S,S)
         imorig= Image.fromarray(imorig)
         imorig= ran_inten(imorig,h,w,rango)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("1-Seccion de intensidad:",Tiempo)
-##        plt.title('Intensidad {:d}'.format(S))
-##        #plt.title("P1: pinta rango de intensidad(for)")            
-##        plt.imshow(imorig)
-##        plt.savefig('1_intensidad' + '.png', dpi=300)
-##        plt.show()    
-
+        Tiempo= (time() - antes)
 ############### negativo ##########################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         imorig=np.array(imorig)
         negativo = cv2.bitwise_not(imorig)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("2-Negativo:",Tiempo)
-        #plt.title("P2:Se hace el negativo")
-##        plt.imshow(negativo)
-##        plt.savefig('2_negativo' + '.png', dpi=300)
-##        plt.show()
-
+        Tiempo= (time() - antes)
 ############### escala de grises #######################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         gray= cv2.cvtColor(negativo, cv2.COLOR_BGR2GRAY)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("3-Escala de grises:",Tiempo)
-        #plt.imshow(gray,cmap='gray')
-        #plt.title("P3: Escala de grises")
-        #plt.show()
+        Tiempo= (time() - antes)
 ################# MEDIAN BLUR #################################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         median = cv2.medianBlur(gray, 9)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("4-Filtro de media:",Tiempo)
-##        plt.imshow(median,cmap='gray')
-        #plt.title("P4: Medianblur 5")
-##        plt.savefig('3_medianblur' + '.png', dpi=300)
-##        plt.show()
-
+        Tiempo= (time() - antes)
 ########### ruido gaussiano #################################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         blur = cv2.GaussianBlur(median,(11,11), 0)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("5-Ruido Gaussiano:",Tiempo)
-##        plt.imshow(blur,cmap='gray')
-        #plt.title("P5: Gaussian Blur")
-##        plt.savefig('4_gaussian' + '.png', dpi=300)
-##        plt.show()
-
+        Tiempo= (time() - antes)
 ############## canny contorno ##############################
-        antes = time() ####!!!!!!!TIEMPO    
+        antes = time()   
         canny= cv2.Canny(blur,30,150,3)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("6-Canny Bordes:",Tiempo)
-##        plt.imshow(canny,cmap='gray')
-        #plt.title('P6: Canny aplicado a blur')
-##        plt.savefig('5_canny' + '.png', dpi=300)
-##        plt.show()
-               
+        Tiempo= (time() - antes)
 #################### DILATED ##################################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time() 
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(9,9))
         dilated = cv2.dilate(canny, kernel)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("7-Operacion Dilatación:",Tiempo)
-##        plt.imshow(dilated)
-        #plt.title('P7: dilated')
-##        plt.savefig('6_dilate' + '.png', dpi=300)
-##        plt.show()
-
+        Tiempo= (time() - antes)
 ################## Detección contornos ########################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         contornos=[]
         verde=(0,255,0)
         (cnt, heirarchy)= cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         rgb = cv2.cvtColor(dilated, cv2.COLOR_BGR2RGB)
         cv2.drawContours(rgb,cnt, -1, verde, 2)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("8-Deteccion de contornos:",Tiempo)
-##        plt.imshow(rgb)
-##        #plt.title('P8: Contornos')
-##        plt.savefig('7_contornos' + '.png', dpi=300)
-##        plt.show()
-        
+        Tiempo= (time() - antes)
 ################## contorno mayor    ###########################
-# si no hay contornos entonces saltar esta prueba 
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time() 
         (cnt, heirarchy)= cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         rgb = cv2.cvtColor(dilated, cv2.COLOR_BGR2RGB)
         for i in range(len(cnt)):
             contornos.append([len(cnt[i]),i])
-##        print("ENCONTRO CONTORNOS: ",len(contornos))
         if len(contornos) == 0:
             break
         mayor=max(contornos)
         borde=mayor[0]
         pos=mayor[1]
         cv2.drawContours(rgb,cnt, pos, verde, 2)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("9-contorno mayor:",Tiempo)
-        #plt.imshow(rgb)
-        #plt.title('P9: Contorno mayor')
-        #plt.show()
-
+        Tiempo= (time() - antes)
 ##################### Borra todo menos el contorno ########################
-        #antes = time() ####!!!!!!!TIEMPO
         new= Image.fromarray(rgb)
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         new=np.array(new)
         new= cont_solo(new,verde)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("10.1-Contorno solo numpy:",Tiempo)
+        Tiempo= (time() - antes)
         xmin=(min(new[1]))[0]
         xmax=(max(new[1]))[0]
         ymin=(min(new[2]))[0]
         ymax=(max(new[2]))[0]
         new=new[0]
-        #print("10-Contorno único:",Tiempo)
-        #plt.imshow(new)
-        #plt.title('P10: Unifica el contorno')
-        #plt.show()
-    
 #################Limites y median blur para hough############################
-        antes = time() ####!!!!!!!TIEMPO
+        antes = time()
         X=xmax-xmin
         Y=ymax-ymin
         diametros=X,Y
         rmax=(ceil(max(diametros)/2))
         rmin=(floor(min(diametros)/2))
-
         cen_circ=cv2.cvtColor(new, cv2.COLOR_BGR2GRAY)
         cen_circ = cv2.medianBlur(cen_circ,5)
-        Tiempo= (time() - antes)####!!!!!!!TIEMPO
-        #print("11-Media para Hough:",Tiempo)
-        #plt.imshow(cen_circ)
-        #plt.title('P11: Median blur para Hough')
-        #plt.show()
-
+        Tiempo= (time() - antes)
 ###################### HOUGH CIRCLE ###########################################
         try:
-            antes = time() ####!!!!!!!TIEMPO    
+            antes = time()   
             circles = cv2.HoughCircles(cen_circ,cv2.HOUGH_GRADIENT,1,1200,
                     param1=100,param2=10,minRadius=rmin,maxRadius=rmax)#80,20
-            circles = np.uint16(np.around(circles))#circles arroja(x,y,radio)
-            #print("circles",circles)
+            circles = np.uint16(np.around(circles))
             rojo=(255,0,0)
             azul=(0,0,255)
             cimg = cv2.cvtColor(cen_circ,cv2.COLOR_GRAY2BGR)
-            for i in circles[0,:]: #dibuja la cantidad de circulos detectados
-            #dibuja fuera del circulo
+            for i in circles[0,:]: 
                 cv2.circle(cimg,(i[0],i[1]),i[2],verde,1)
-            #dibuja el centro del circulo
                 cv2.circle(cimg,(i[0],i[1]),2,rojo,-1)        
         
             cen_x=circles[0][0][0]
             cen_y=circles[0][0][1]
             pix_cen= (cen_y, cen_x)
             cimg[pix_cen]= azul
-            Tiempo= (time() - antes)####!!!!!!!TIEMPO
-            #print("12-Circulo encontrado:",Tiempo)
-            #plt.title('P12: Circulo encontrado con centro')
-##            plt.imshow(cimg)    ###################
-##            plt.savefig('8_HoughCircles' + '.png', dpi=300)
-##            plt.show()          ####################
-            #print("Si detecto")
-
+            Tiempo= (time() - antes)
         except TypeError:
-            #print("No detecto")
             pix_cen=(0,0)
     
         if pix_cen != (0,0):
             CX.append(pix_cen[0])
             CY.append(pix_cen[1])
-        #print(pix_cen)
-        Tiempo_ciclo= (time() - antes_ciclo)####!!!!!!!TIEMPO
-        #print(Tiempo_ciclo)
-
+        Tiempo_ciclo= (time() - antes_ciclo)
 ###################### caja bigote #############################
     antes = time()
     X_data=[]
@@ -253,10 +164,8 @@ def center(muestra, rangos):
         outliers_x= ([CX] < big_infx) | ([CX] > big_supx)
         for i in range(len(CX)):
             if CX[i] < big_infx:
-                #print("hubo uno inferior",CX[i])
                 nuevos_x= CX2.remove(CX[i])
             if CX[i] > big_supx:
-                #print("hubo uno superior",CX[i])
                 nuevos_x= CX2.remove(CX[i])
 
         CY2= CY[:]
@@ -271,108 +180,17 @@ def center(muestra, rangos):
         outliers_y= ([CY] < big_infy) | ([CY] > big_supy)
         for i in range(len(CY)):
             if CY[i] < big_infy:
-                #print("hubo uno inferior",CY[i])
                 nuevos_y= CY2.remove(CY[i])
             if CY[i] > big_supy:
-                #print("hubo uno superior",CY[i])
                 nuevos_y= CY2.remove(CY[i])
         CX=CX2
         CY=CY2
         X_data.append(CX)
         Y_data.append(CY)
-
-##    plt.subplot(1, 1, 1)
-##    plt.title("Coordenada X")
-##    plt.boxplot(X_data)
-##    plt.ylabel('Posiciones X del píxel', fontsize = 15)
-##    plt.xlabel('Ciclos para eliminar anomalías', fontsize = 15)
-##    plt.xticks(fontsize = 9)
-##    plt.yticks(fontsize = 9)
-##    plt.show()
-##    plt.subplot(1, 1, 1)
-##    plt.title("Coordenada Y")
-##    plt.boxplot(Y_data)
-##    plt.ylabel('Posiciones Y del píxel')
-##    plt.xlabel('Ciclos para eliminar anomalías')
-##    plt.show()
-##
-##    params = {'legend.fontsize': 17}
-##    plt.rcParams.update(params)
-##    plt.subplot(1, 1, 1)
-##    plt.figure(figsize=(8, 6), dpi=300)   
-##    plt.xlabel('Cambio de intensidad',fontsize = 22)
-##    plt.ylabel('Posición de píxel',fontsize = 22)
-##    plt.plot(range(len(X_data[0])), X_data[0], color='r')
-##    plt.scatter(range(len(X_data[0])), X_data[0], marker="x", color="r", s=25,label='Pixel X')
-##    plt.plot(range(len(Y_data[0])), Y_data[0], color='b')
-##    plt.scatter(range(len(Y_data[0])), Y_data[0], marker="1", color="b", s=30,label='Pixel Y')
-##    plt.xticks(fontsize = 20)
-##    plt.yticks(fontsize = 20)
-##    plt.legend(fontsize = 20)
-##    plt.legend(loc='upper right', title='Eje de píxel')
-##    plt.savefig('XY_1.png', bbox_inches='tight')
-####    plt.show()
-##
-##    plt.subplot(1, 1, 1)
-##    plt.figure(figsize=(8, 6), dpi=300)   
-##    plt.xlabel('Cambio de intensidad',fontsize = 22)
-##    plt.ylabel('Posición de píxel',fontsize = 22)
-##    plt.plot(range(len(X_data[1])), X_data[1], color='r')
-##    plt.scatter(range(len(X_data[1])), X_data[1], marker="x", color="r", s=25,label='Pixel X')
-##    plt.plot(range(len(Y_data[1])), Y_data[1], color='b')
-##    plt.scatter(range(len(Y_data[1])), Y_data[1], marker="1", color="b", s=30,label='Pixel Y')
-##    plt.xticks(fontsize = 20)
-##    plt.yticks(fontsize = 20)
-##    plt.legend(fontsize = 20)
-##    plt.legend(loc='upper right', title='Eje de píxel')
-##    plt.savefig('XY_2.png', bbox_inches='tight')
-####    plt.show()
-##    
-##    plt.subplot(1, 1, 1)
-##    plt.figure(figsize=(8, 6), dpi=300)   
-##    plt.xlabel('Cambio de intensidad',fontsize = 22)
-##    plt.ylabel('Posición de píxel',fontsize = 22)
-##    plt.plot(range(len(X_data[2])), X_data[2], color='r')
-##    plt.scatter(range(len(X_data[2])), X_data[2], marker="x", color="r", s=25,label='Pixel X')
-##    plt.plot(range(len(Y_data[2])), Y_data[2], color='b')
-##    plt.scatter(range(len(Y_data[2])), Y_data[2], marker="1", color="b", s=30,label='Pixel Y')
-##    plt.xticks(fontsize = 20)
-##    plt.yticks(fontsize = 20)
-##    plt.legend(fontsize = 20)
-##    plt.legend(loc='upper right', title='Eje de píxel')
-##    plt.savefig('XY_3.png', bbox_inches='tight')
-####    plt.show()
-##
-##    plt.subplot(1, 1, 1)
-##    plt.figure(figsize=(8, 6), dpi=300)   
-##    plt.xlabel('Cambio de intensidad',fontsize = 22)
-##    plt.ylabel('Posición de píxel',fontsize = 22)
-##    plt.plot(range(len(X_data[3])), X_data[3], color='r')
-##    plt.scatter(range(len(X_data[3])), X_data[3], marker="x", color="r", s=25,label='Pixel X')
-##    plt.plot(range(len(Y_data[3])), Y_data[3], color='b')
-##    plt.scatter(range(len(Y_data[3])), Y_data[3], marker="1", color="b", s=30,label='Pixel Y')
-##    plt.xticks(fontsize = 20)
-##    plt.yticks(fontsize = 20)
-##    plt.legend(fontsize = 20)
-##    plt.legend(loc='upper right', title='Eje de píxel')
-##    plt.savefig('XY_4.png', bbox_inches='tight')
-##    plt.show()
-        
     Tiempo= (time() - antes)
-    #print("Tiempo de analisis Graficos: ", Tiempo)    
-##    print("Prom con anomalia X:",np.mean(X_data[0]),"Y:",np.mean(Y_data[0]))
-##    print("Prom ciclo 1 X:",np.mean(X_data[1]),"Y:",np.mean(Y_data[1]))
-##    print("Prom ciclo 2 X:",np.mean(X_data[2]),"Y:",np.mean(Y_data[2]))
-##    print("Prom ciclo 3 X:",np.mean(X_data[3]),"Y:",np.mean(Y_data[3]))
-    
     X= ((sum(CX))/(len(CX)))
     Y= ((sum(CY))/(len(CY)))
     pix_cen=(round(X), round(Y))
-    #print("centro promedio:",pix_cen)
-    #muestra[pix_cen]= (0,255,0)
-    #plt.title('P12: Circulo encontrado con centro')
-    #plt.imshow(muestra)
-    #plt.show()      
     return(pix_cen)
 
 

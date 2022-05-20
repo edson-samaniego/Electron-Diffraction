@@ -16,15 +16,11 @@ def resta(muestra,pixel_cen):
     linea=orig.copy()
     Y, X = orig.shape[0], orig.shape[1]
     centro= pixel_cen
-    esquina =(0,0) #(Y, X)
+    esquina =(0,0) 
     E1=sqrt((esquina[0]-centro[0])**2+(esquina[1]-centro[1])**2), esquina
     verde=(0,255,0)
     end_point = (esquina)
     linea = cv2.line(linea,(centro[1],centro[0]), end_point, verde, 1)
-##    cv2.imwrite('diagonal.png',linea)
-##    plt.imshow(linea)
-##    plt.show()
-
 ################# Guarda intensidades y euclidianas #####################
     diagonal=[]
     posit=[]
@@ -39,30 +35,13 @@ def resta(muestra,pixel_cen):
 ################ elimina bajada final si es que hay #######################
     diagonal.reverse()
     diagonal2=diagonal.copy()
-##    plt.subplot(122), plt.plot((range(0,len(diagonal2))),diagonal2)
-##    plt.subplot(121), plt.imshow(linea), plt.title('antes de recorte')
-##    plt.show()
-### agregar si el siguiente a el pixel leido es mayor entonces borrar actual
     anterior=0
-##    for e in range(0,len(diagonal2)):
-##        diagonal.pop(0)
-##        if diagonal2[e] > 230:##### utilizo rango, ver como ajustar
-##            break
     for e in range(0,len(diagonal2)):
         diagonal.pop(0)
-        if anterior-5 > diagonal2[e]:##### utilizo rango, ver como ajustar
-##            print("hubo break en:",diagonal2[e])
+        if anterior-5 > diagonal2[e]:
             break
         anterior=diagonal2[e]
     diagonal.reverse()
-##    plt.subplot(111), plt.plot((range(0,len(diagonal))),diagonal)
-##    plt.xlabel('Pixeles', fontsize=16)
-##    plt.ylabel('Intensidades', fontsize=16)
-##    plt.xticks(fontsize=9)
-##    plt.yticks(fontsize=9)
-##    #plt.subplot(121), plt.imshow(linea), plt.title('linea')
-##    plt.show()
-
 #################### Se aplica regresion polinomial ###########################
     pixeles_diag=len(diagonal)
     x=(range(0,len(diagonal)))
@@ -71,19 +50,10 @@ def resta(muestra,pixel_cen):
     pixeles_diag2=len(inverso)
     x2=(range(0,len(inverso)))
     y2=inverso
-
     mymodel = np.poly1d(np.polyfit(x, y, 6))
     myline = np.linspace(0, len(diagonal), pixeles_diag)
     mymodel2 = np.poly1d(np.polyfit(x2, y2, 6))
     myline2 = np.linspace(0, len(inverso), pixeles_diag2)
-##    plt.plot(x, y)
-##    plt.xlabel('Pixeles', fontsize=16)
-##    plt.ylabel('Intensidades', fontsize=16)
-##    plt.xticks(fontsize=9)
-##    plt.yticks(fontsize=9)
-##    plt.plot(myline, mymodel(myline))
-##    plt.show()
-
 ###################### buscar picos de grafico ##################################
     data=(myline, mymodel(myline))
     peaks = find_peaks(diagonal, height= (data[1], 230),distance=10, prominence=15)
@@ -91,43 +61,15 @@ def resta(muestra,pixel_cen):
     peak_pos = peaks[0]
 
     data2=(myline2, mymodel2(myline2))
-    peaks2 = find_peaks(inverso, height= (data2[1], 230))#,distance=10, prominence=5)
+    peaks2 = find_peaks(inverso, height= (data2[1], 230))
     height2 = peaks2[1]['peak_heights'] 
     peak_pos2 = peaks2[0]
     real_height2 = height2 *-1
-
-###plt.plot(data[1], "--", color="gray")
-##    plt.plot(myline, mymodel(myline),color='gray')
-##    plt.xlabel('Pixeles', fontsize=16)
-##    plt.ylabel('Intensidades', fontsize=16)
-##    plt.xticks(fontsize=9)
-##    plt.yticks(fontsize=9)
-##    plt.scatter(peak_pos, height, color= 'r', s=90, marker='x')
-###plt.plot((range(0,len(diagonal))),diagonal, color='blue')
-##    plt.scatter((range(0,len(diagonal))),diagonal, color='blue', s=8)
-##    plt.show()
-
-##    plt.plot(myline, mymodel(myline),color='gray')
-##    plt.xlabel('Pixeles', fontsize=16)
-##    plt.ylabel('Intensidades', fontsize=16)
-##    plt.xticks(fontsize=9)
-##    plt.yticks(fontsize=9)
-##    plt.plot((range(0,len(diagonal))), diagonal, color= 'green')
-##    plt.scatter(peak_pos, height, color= 'green', s=90, marker='x')
-##    plt.scatter((range(0,len(diagonal))), diagonal, color='blue', s=8)
-###plt.plot(myline2, mymodel2(myline2),color='gray')
-###plt.plot((range(0,len(inverso))), inverso, color= 'green')
-##    plt.scatter(peak_pos2, real_height2, color= 'r', s=90, marker='x')
-###plt.scatter((range(0,len(inverso))),inverso, color='blue', s=8)
-##    plt.show()
-
 ######################### elimina picos ###################################
     for s in peak_pos[0:]:
-        #print("################## pico posicion:",s, " ##################")
         menores=[]
         mayores=[]
         contador=0
-##        print("cuantos picos hay",len(peak_pos))
         for t in peak_pos2[0:]:
             if t < s:
                 u=real_height2[contador]
@@ -147,35 +89,9 @@ def resta(muestra,pixel_cen):
         remplazo=list(range(1,dif_hor+1))
         nuevo = [round(i * divis) for i in remplazo]
         nuevo2=[]
-        ###### error aqui en otras muestras picos dobles no hay minimo y brinca
-##        print("nuevo",nuevo)
-##        print(datavert)
         for s in nuevo:
-##            print(datavert[s])
             nuevo2.append(datavert[s])    
         diagonal=pt1 + nuevo2 + pt2
-        
-##        plt.plot(myline, mymodel(myline),color='gray')
-##        plt.xlabel('Pixeles', fontsize=16)
-##        plt.ylabel('Intensidades', fontsize=16)
-##        plt.xticks(fontsize=9)
-##        plt.yticks(fontsize=9)
-##        plt.plot((range(0,len(diagonal))), diagonal, color= 'green')
-##        plt.scatter(peak_pos, height, color= 'r', s=90, marker='x')
-##        plt.scatter((range(0,len(diagonal))), diagonal, color='blue', s=8)
-##    #plt.plot(myline2, mymodel2(myline2),color='gray')
-##    #plt.plot((range(0,len(inverso))), inverso, color= 'green')
-##        plt.scatter(peak_pos2, real_height2, color= 'r', s=90, marker='x')
-##    #plt.scatter((range(0,len(inverso))),inverso, color='blue', s=8)
-##        plt.show()
-        
-##        plt.subplot(111), plt.plot((range(0,len(diagonal))),diagonal)
-##        plt.xlabel('Pixeles', fontsize=16)
-##        plt.ylabel('Intensidades', fontsize=16)
-##        plt.xticks(fontsize=9)
-##        plt.yticks(fontsize=9)
-##        plt.show()
-    
 ############################## nuevo gradiente ###############################
     im = np.zeros((Y,X,3),np.uint8)
     for G in range(len(diagonal)):
@@ -185,14 +101,4 @@ def resta(muestra,pixel_cen):
         im10 = cv2.circle(im, (centro[1], centro[0]), radius, color, -1)
     suma=cv2.add(orig,im10)
     resta=cv2.subtract(orig,im10)
-
-##    plt.subplot(121), plt.imshow(orig), plt.title('original')
-##    plt.subplot(111),plt.imshow(im10)#, plt.title('gradiente')
-##    plt.subplot(133), plt.imshow(resta), plt.title('resta')
-##    plt.show()    
-##    plt.subplot(121), plt.imshow(orig), plt.title('original')
-##    plt.subplot(122), plt.imshow(resta), plt.title('sin gradiente')
-##    plt.show()
-##    cv2.imwrite('Gradiente.png',im10)
-##    cv2.imwrite('resta_grad.png',resta)
     return(resta)

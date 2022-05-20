@@ -5,8 +5,7 @@ from openpyxl.workbook import Workbook
 
 def DRX(muestras):
      DF=[]
-     for tarjeta in muestras:#,'Ag3.rtf','Ag4.rtf','Ag5.rtf','Ag6.rtf','Ag7.rtf','Ag8.rtf','Ag9.rtf',]:
-##          print("########## tarjeta:",tarjeta,"###############")
+     for tarjeta in muestras:
           records = []
           header = None
           parse = False
@@ -36,9 +35,6 @@ def DRX(muestras):
                                         records.append(ints + floats)
           df = pd.DataFrame.from_records(records, columns = header)
           DF.append(df)    
-##     DF_1=DF[0]
-##     DF_2=DF[1]
-##     DF = DF_1.append(DF_2, ignore_index=True)
      return(df)
 
 def PTC_Lab(muestra):
