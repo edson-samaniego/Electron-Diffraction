@@ -10,19 +10,6 @@ from PIL.ImageFilter import (BLUR, CONTOUR, DETAIL, EDGE_ENHANCE,
                              EDGE_ENHANCE_MORE, EMBOSS, FIND_EDGES,
                              SMOOTH, SMOOTH_MORE, SHARPEN)
 
-def ran_inten(imorig,h,w,rango):
-    imorig=np.array(imorig)
-    im_copy=imorig.copy()
-    blanco=(255,255,255)
-    negro=(0,0,0)
-    
-    black_pixels_mask = np.all(imorig <= rango, axis=-1)
-    non_black_pixels_mask = np.any(imorig > rango, axis=-1)
-
-    im_copy[black_pixels_mask] = [255, 255, 255]
-    im_copy[non_black_pixels_mask] = [0, 0, 0]
-    return (im_copy)
-
 def cont_solo(new,verde):
     white = np.any(new != verde, axis=-1)
     new[white] = [0, 0, 0]
@@ -37,23 +24,19 @@ def center(muestra, rangos):
     h, w, c = muestra.shape
     implot= muestra.copy()
     muestra= cv2.rectangle(muestra, (0,900), (300,w-1), (0,0,0), -1)
-    for S in rangos:
+    for R in rangos:
         antes_ciclo = time()
         antes = time()
         h, w, c = muestra.shape
         imorig= cv2.rectangle(muestra, (0,0), (w-1,h-1), (0,0,0), 1)
         Tiempo= (time() - antes)
-########### Pinta segun el rango de intensidad ########## 
+########### Threshold segun el rango de intensidad ########## 
         antes = time()
-        blanco=(255,255,255)
-        negro=(0,0,0)
-        rango=(S,S,S)
-        imorig= Image.fromarray(imorig)
-        imorig= ran_inten(imorig,h,w,rango)
+        imorig = cv2.cvtColor(imorig, cv2.COLOR_BGR2RGB)
+        ret, imorig= cv2.threshold(imorig, R, 255, cv2.THRESH_BINARY_INV)
         Tiempo= (time() - antes)
 ############### negativo ##########################
         antes = time()
-        imorig=np.array(imorig)
         negativo = cv2.bitwise_not(imorig)
         Tiempo= (time() - antes)
 ############### escala de grises #######################
