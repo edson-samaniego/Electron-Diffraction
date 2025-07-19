@@ -5,7 +5,7 @@ import sys
 pygame.init()
 ancho, alto = 800, 600
 pantalla = pygame.display.set_mode((ancho, alto))
-pygame.display.set_caption("Guerrero en movimiento")
+pygame.display.set_caption("Movimiento automático del guerrero")
 reloj = pygame.time.Clock()
 
 # Colores
@@ -20,7 +20,7 @@ class Personaje:
         self.ataque = ataque
         self.x = x
         self.y = y
-        self.velocidad = 5  # atributo común
+        self.velocidad = 5
 
     def caminar(self, dx, dy):
         self.x += dx * self.velocidad
@@ -33,39 +33,37 @@ class Personaje:
 class Guerrero(Personaje):
     def __init__(self, nombre, vida, ataque, x, y, armadura):
         super().__init__(nombre, vida, ataque, x, y)
-        self.armadura = armadura  # 5to atributo específico del guerrero
+        self.armadura = armadura
 
     def dibujar(self, superficie):
-        pygame.draw.rect(superficie, ROJO, (self.x, self.y, 40, 60))  # dibuja un "guerrero"
+        pygame.draw.rect(superficie, ROJO, (self.x, self.y, 40, 60))
 
-# Crear objeto
+# Crear objeto guerrero
 guerrero = Guerrero("Axel", 100, 25, 100, 100, 50)
+
+# Control del movimiento automático
+pasos_derecha = 10
+pasos_abajo = 5
 
 # Bucle principal
 while True:
     pantalla.fill(NEGRO)
 
-    # Manejo de eventos
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-    # Teclas presionadas
-    teclas = pygame.key.get_pressed()
-    dx, dy = 0, 0
-    if teclas[pygame.K_LEFT]:
-        dx = -1
-    if teclas[pygame.K_RIGHT]:
-        dx = 1
-    if teclas[pygame.K_UP]:
-        dy = -1
-    if teclas[pygame.K_DOWN]:
-        dy = 1
-    if teclas[pygame.K_SPACE]:
-        guerrero.atacar()
+    # Movimiento automático por pasos
+    if pasos_derecha > 0:
+        guerrero.caminar(1, 0)  # derecha
+        pasos_derecha -= 1
+    elif pasos_abajo > 0:
+        guerrero.caminar(0, 1)  # abajo
+        pasos_abajo -= 1
+    else:
+        pass  # ya no se mueve
 
-    guerrero.caminar(dx, dy)
     guerrero.dibujar(pantalla)
 
     pygame.display.flip()
