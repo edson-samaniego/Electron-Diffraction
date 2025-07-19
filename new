@@ -1,0 +1,72 @@
+import pygame
+import sys
+
+# Inicializa Pygame
+pygame.init()
+ancho, alto = 800, 600
+pantalla = pygame.display.set_mode((ancho, alto))
+pygame.display.set_caption("Guerrero en movimiento")
+reloj = pygame.time.Clock()
+
+# Colores
+NEGRO = (0, 0, 0)
+ROJO = (200, 0, 0)
+
+# Clase base
+class Personaje:
+    def __init__(self, nombre, vida, ataque, x, y):
+        self.nombre = nombre
+        self.vida = vida
+        self.ataque = ataque
+        self.x = x
+        self.y = y
+        self.velocidad = 5  # atributo común
+
+    def caminar(self, dx, dy):
+        self.x += dx * self.velocidad
+        self.y += dy * self.velocidad
+
+    def atacar(self):
+        print(f"{self.nombre} ataca con {self.ataque} de poder!")
+
+# Subclase
+class Guerrero(Personaje):
+    def __init__(self, nombre, vida, ataque, x, y, armadura):
+        super().__init__(nombre, vida, ataque, x, y)
+        self.armadura = armadura  # 5to atributo específico del guerrero
+
+    def dibujar(self, superficie):
+        pygame.draw.rect(superficie, ROJO, (self.x, self.y, 40, 60))  # dibuja un "guerrero"
+
+# Crear objeto
+guerrero = Guerrero("Axel", 100, 25, 100, 100, 50)
+
+# Bucle principal
+while True:
+    pantalla.fill(NEGRO)
+
+    # Manejo de eventos
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    # Teclas presionadas
+    teclas = pygame.key.get_pressed()
+    dx, dy = 0, 0
+    if teclas[pygame.K_LEFT]:
+        dx = -1
+    if teclas[pygame.K_RIGHT]:
+        dx = 1
+    if teclas[pygame.K_UP]:
+        dy = -1
+    if teclas[pygame.K_DOWN]:
+        dy = 1
+    if teclas[pygame.K_SPACE]:
+        guerrero.atacar()
+
+    guerrero.caminar(dx, dy)
+    guerrero.dibujar(pantalla)
+
+    pygame.display.flip()
+    reloj.tick(60)
